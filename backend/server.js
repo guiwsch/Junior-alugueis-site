@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
 const path = require("path");
+const { MongoClient } = require("mongodb");
 
 const app = express();
 const PORT = 3001;
@@ -21,20 +22,37 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Banco de dados em memória (exemplo)
-let apartamentos = [];
-let id = 1;
+// Conexão com MongoDB
+const uri = "mongodb://localhost:27017/JuniorSite.database";
+const client = new MongoClient(uri);
+let db;
+
+async function conectarMongo() {
+  try {
+    await client.connect();
+    db = client.db("apartamentosDB");
+    console.log("Conectado ao MongoDB!");
+
+    // Inicia o servidor SOMENTE após conectar ao banco
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando em http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error("Erro ao conectar no MongoDB:", err);
+  }
+}
+
+conectarMongo();
 
 // Rota de cadastro
-app.post("/api/apartamentos", upload.single("image"), (req, res) => {
+app.post("/api/apartamentos", upload.single("image"), async (req, res) => {
   try {
     const { type, address, rooms, bathrooms, garage, price } = req.body;
     const imageUrl = req.file
-      ? `http://localhost:3001/uploads/${req.file.filename}`
+      ? `http://localhost:${PORT}/uploads/${req.file.filename}`
       : "";
 
     const novoApartamento = {
-      id: id++,
       type,
       address,
       rooms,
@@ -44,8 +62,10 @@ app.post("/api/apartamentos", upload.single("image"), (req, res) => {
       imageUrl,
     };
 
-    apartamentos.push(novoApartamento);
-    res.status(201).json(novoApartamento);
+    const result = await db
+      .collection("apartamentos")
+      .insertOne(novoApartamento);
+    res.status(201).json({ ...novoApartamento, _id: result.insertedId });
   } catch (err) {
     console.error("Erro ao salvar apartamento:", err);
     res.status(500).json({ error: "Erro ao salvar apartamento" });
@@ -53,10 +73,12 @@ app.post("/api/apartamentos", upload.single("image"), (req, res) => {
 });
 
 // Rota de listagem
-app.get("/api/apartamentos", (req, res) => {
-  res.json(apartamentos);
-});
-
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+app.get("/api/apartamentos", async (req, res) => {
+  try {
+    const apartamentos = await db.collection("apartamentos").find().toArray();
+    res.json(apartamentos);
+  } catch (err) {
+    console.error("Erro ao buscar apartamentos:", err);
+    res.status(500).json({ error: "Erro ao buscar apartamentos" });
+  }
 });
