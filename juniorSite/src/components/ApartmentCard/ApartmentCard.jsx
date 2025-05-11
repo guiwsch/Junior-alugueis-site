@@ -10,7 +10,7 @@ const ApartmentCard = ({ apartment }) => {
         <img
           src={apartment.imageUrl}
           alt="Apartamento"
-          style={{ width: "100%", height: "auto" }}
+          style={{ width: "100%", maxHeight: "100%" }}
         />
       </div>
       <div className={st.info}>
