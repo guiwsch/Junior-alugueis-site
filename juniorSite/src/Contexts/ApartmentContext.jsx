@@ -26,12 +26,16 @@ export const ApartmentProvider = ({ children }) => {
   // Função para adicionar um novo apartamento
   const addApartment = async (apartmentData) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:3001/api/apartamentos",
-        apartmentData
+        apartmentData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-      const newApartment = { ...apartmentData, id: response.data.id };
-      setApartments((prev) => [...prev, newApartment]);
+      await fetchApartments(); // recarrega todos os dados do banco
     } catch (error) {
       console.error("Erro ao adicionar apartamento:", error);
     }

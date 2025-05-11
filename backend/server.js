@@ -1,31 +1,62 @@
 const express = require("express");
+const multer = require("multer");
 const cors = require("cors");
-const db = require("./db");
+const path = require("path");
 
 const app = express();
+const PORT = 3001;
+
 app.use(cors());
-app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.post("/api/apartamentos", (req, res) => {
-  const { type, address, rooms, bathrooms, garage, price } = req.body;
+// Configura onde salvar as imagens
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+const upload = multer({ storage });
 
-  db.run(
-    `INSERT INTO apartamentos (type, address, rooms, bathrooms, garage, price) VALUES (?, ?, ?, ?, ?, ?)`,
-    [type, address, rooms, bathrooms, garage, price],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.status(201).json({ id: this.lastID });
-    }
-  );
+// Banco de dados em memória (exemplo)
+let apartamentos = [];
+let id = 1;
+
+// Rota de cadastro
+app.post("/api/apartamentos", upload.single("image"), (req, res) => {
+  try {
+    const { type, address, rooms, bathrooms, garage, price } = req.body;
+    const imageUrl = req.file
+      ? `http://localhost:3001/uploads/${req.file.filename}`
+      : "";
+
+    const novoApartamento = {
+      id: id++,
+      type,
+      address,
+      rooms,
+      bathrooms,
+      garage,
+      price,
+      imageUrl,
+    };
+
+    apartamentos.push(novoApartamento);
+    res.status(201).json(novoApartamento);
+  } catch (err) {
+    console.error("Erro ao salvar apartamento:", err);
+    res.status(500).json({ error: "Erro ao salvar apartamento" });
+  }
 });
 
+// Rota de listagem
 app.get("/api/apartamentos", (req, res) => {
-  db.all(`SELECT * FROM apartamentos`, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+  res.json(apartamentos);
 });
 
-app.listen(3001, () => {
-  console.log("Backend rodando em http://localhost:3001");
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

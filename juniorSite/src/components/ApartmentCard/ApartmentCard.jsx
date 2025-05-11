@@ -7,7 +7,11 @@ const ApartmentCard = ({ apartment }) => {
   return (
     <div className={st.card}>
       <div className={st.imageContainer}>
-        <img src={Pictures} alt={apartment.tipo} className={st.image} />
+        <img
+          src={apartment.imageUrl}
+          alt="Apartamento"
+          style={{ width: "100%", height: "auto" }}
+        />
       </div>
       <div className={st.info}>
         <span className={st.tipo}>{type}</span>

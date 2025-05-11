@@ -27,7 +27,11 @@ const ApartmentForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await addApartment(formData);
+    const data = new FormData();
+    for (const key in formData) {
+      data.append(key, formData[key]);
+    }
+    await addApartment(data);
     setFormData({
       type: "",
       address: "",
