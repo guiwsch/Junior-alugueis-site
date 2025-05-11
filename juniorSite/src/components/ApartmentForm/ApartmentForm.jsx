@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useApartments } from "../../Contexts/ApartmentContext";
 
 const ApartmentForm = () => {
+  const { addApartment } = useApartments();
+
   const [formData, setFormData] = useState({
     type: "",
     address: "",
@@ -8,24 +11,31 @@ const ApartmentForm = () => {
     bathrooms: "",
     garage: "",
     price: "",
+    image: null,
   });
+  const handleImageChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: e.target.files[0],
+    }));
+  };
 
   const handleFormEdit = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
-    try {
-      event.preventDefault();
-      const response = await fetch(`/api/user/cadastro`, {
-        method: "POST",
-        body: JSON.stringify(formData),
-      });
-      const json = await response.json();
-      console.log(response.status);
-      console.log(json);
-    } catch (err) {}
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await addApartment(formData);
+    setFormData({
+      type: "",
+      address: "",
+      rooms: "",
+      bathrooms: "",
+      garage: "",
+      price: "",
+    });
   };
 
   return (
@@ -33,58 +43,52 @@ const ApartmentForm = () => {
       <input
         name="type"
         value={formData.type}
-        onChange={(e) => {
-          handleFormEdit(e, "name");
-        }}
+        onChange={handleFormEdit}
         placeholder="Tipo"
         required
       />
       <input
         name="address"
         value={formData.address}
-        onChange={(e) => {
-          handleFormEdit(e, "name");
-        }}
+        onChange={handleFormEdit}
         placeholder="Endereço"
         required
       />
       <input
         name="rooms"
-        value={formData.rooms}
-        onChange={(e) => {
-          handleFormEdit(e, "name");
-        }}
-        placeholder="Quartos"
         type="number"
+        value={formData.rooms}
+        onChange={handleFormEdit}
+        placeholder="Quartos"
         required
       />
       <input
         name="bathrooms"
-        value={formData.bathrooms}
-        onChange={(e) => {
-          handleFormEdit(e, "name");
-        }}
-        placeholder="Banheiros"
         type="number"
+        value={formData.bathrooms}
+        onChange={handleFormEdit}
+        placeholder="Banheiros"
         required
       />
       <input
         name="garage"
-        value={formData.garage}
-        onChange={(e) => {
-          handleFormEdit(e, "name");
-        }}
-        placeholder="Garagem"
         type="number"
+        value={formData.garage}
+        onChange={handleFormEdit}
+        placeholder="Garagem"
         required
       />
       <input
         name="price"
         value={formData.price}
-        onChange={(e) => {
-          handleFormEdit(e, "name");
-        }}
+        onChange={handleFormEdit}
         placeholder="Preço"
+        required
+      />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
         required
       />
       <button type="submit">Cadastrar</button>

@@ -6,7 +6,7 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import ArrowButton from "../../components/ArrowButton/ArrowButton";
 
 const ApartmentSell = () => {
-  const { apartments } = useApartments();
+  const { apartments, addApartment, fetchApartments } = useApartments();
   const [startIndex, setStartIndex] = useState(0);
   const itemsPerPage = 3;
 
@@ -45,9 +45,11 @@ const ApartmentSell = () => {
           className={st.arrowButton}
         />
 
-        {visibleApartments.map((apt) => (
-          <ApartmentCard key={apt.id} apartment={apt} />
-        ))}
+        {visibleApartments
+          .filter((apt) => apt && apt.id)
+          .map((apt) => (
+            <ApartmentCard key={apt.id} apartment={apt} />
+          ))}
 
         <ArrowButton
           onClick={next}
