@@ -1,0 +1,23 @@
+.MainButton {
+  padding: 30px 100px;
+  font-size: 22px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.MainButton:hover {
+  transform: scale(1.05);
+  transition: all 0.6s;
+}
+
+.primary {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  border: 1px solid black;
+}
+
+.secondary {
+  background-color: #f0f0f0;
+  color: #333;
+}

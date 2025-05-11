@@ -1,0 +1,34 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(170, 170, 170);
+  color: white;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 50px 100px;
+}
+.dump {
+  display: flex;
+  justify-content: center;
+}
+
+.arrowButton {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #007bff;
+  transition: transform 0.2s ease;
+}
+
+.arrowButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.arrowButton:hover:not(:disabled) {
+  transform: scale(1.1);
+}

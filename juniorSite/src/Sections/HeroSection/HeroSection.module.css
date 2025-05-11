@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(135, 135, 135);
+  text-align: center;
+}
+
+.container h1 {
+  font-size: 84px;
+}
+header {
+  text-align: center;
+}
+
+.SectionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
