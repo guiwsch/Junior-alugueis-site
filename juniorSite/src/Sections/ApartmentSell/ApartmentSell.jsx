@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useApartments } from "../../Contexts/ApartmentContext";
 import ApartmentCard from "../../components/ApartmentCard/ApartmentCard";
 import st from "./ApartmentSell.module.css";
@@ -6,7 +6,7 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import ArrowButton from "../../components/ArrowButton/ArrowButton";
 
 const ApartmentSell = () => {
-  const { apartments, addApartment, fetchApartments } = useApartments();
+  const { apartments, fetchApartments } = useApartments();
   const [startIndex, setStartIndex] = useState(0);
   const itemsPerPage = 3;
 
@@ -28,6 +28,10 @@ const ApartmentSell = () => {
     visibleApartments.push(apartments[index]);
   }
 
+  useEffect(() => {
+    fetchApartments(); // Chama a função para buscar os apartamentos
+  }, [fetchApartments]);
+
   return (
     <div className={st.container}>
       <header>
@@ -46,9 +50,9 @@ const ApartmentSell = () => {
         />
 
         {visibleApartments
-          .filter((apt) => apt && apt.id)
+          .filter((apt) => apt && apt._id)
           .map((apt) => (
-            <ApartmentCard key={apt.id} apartment={apt} />
+            <ApartmentCard key={apt._id} apartment={apt} />
           ))}
 
         <ArrowButton

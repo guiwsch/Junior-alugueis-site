@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useApartments } from "../../Contexts/ApartmentContext";
+import styles from "./apartmentform.module.css";
 
-const ApartmentForm = () => {
+const ApartmentForm = ({ onAddApartment }) => {
   const { addApartment } = useApartments();
 
   const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ const ApartmentForm = () => {
     price: "",
     image: null,
   });
+  const [successMessage, setSuccessMessage] = useState(false);
+
   const handleImageChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -31,71 +34,109 @@ const ApartmentForm = () => {
     for (const key in formData) {
       data.append(key, formData[key]);
     }
-    await addApartment(data);
-    setFormData({
-      type: "",
-      address: "",
-      rooms: "",
-      bathrooms: "",
-      garage: "",
-      price: "",
-    });
+    try {
+      await addApartment(data);
+      setSuccessMessage(true);
+      setFormData({
+        type: "",
+        address: "",
+        rooms: "",
+        bathrooms: "",
+        garage: "",
+        price: "",
+        image: null,
+      });
+      // Recarrega a página após 1.5 segundos para mostrar a mensagem
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (error) {
+      console.error("Erro ao cadastrar apartamento:", error);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        name="type"
-        value={formData.type}
-        onChange={handleFormEdit}
-        placeholder="Tipo"
-        required
-      />
-      <input
-        name="address"
-        value={formData.address}
-        onChange={handleFormEdit}
-        placeholder="Endereço"
-        required
-      />
-      <input
-        name="rooms"
-        type="number"
-        value={formData.rooms}
-        onChange={handleFormEdit}
-        placeholder="Quartos"
-        required
-      />
-      <input
-        name="bathrooms"
-        type="number"
-        value={formData.bathrooms}
-        onChange={handleFormEdit}
-        placeholder="Banheiros"
-        required
-      />
-      <input
-        name="garage"
-        type="number"
-        value={formData.garage}
-        onChange={handleFormEdit}
-        placeholder="Garagem"
-        required
-      />
-      <input
-        name="price"
-        value={formData.price}
-        onChange={handleFormEdit}
-        placeholder="Preço"
-        required
-      />
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        required
-      />
-      <button type="submit">Cadastrar</button>
+    <form className={styles.formContainer} onSubmit={handleSubmit}>
+      <div className={styles.formGroup}>
+        <input
+          className={styles.input}
+          name="type"
+          value={formData.type}
+          onChange={handleFormEdit}
+          placeholder="Tipo"
+          required
+        />
+      </div>
+      <div className={styles.formGroup}>
+        <input
+          className={styles.input}
+          name="address"
+          value={formData.address}
+          onChange={handleFormEdit}
+          placeholder="Endereço"
+          required
+        />
+      </div>
+      <div className={styles.formGroup}>
+        <input
+          className={styles.input}
+          name="rooms"
+          type="number"
+          value={formData.rooms}
+          onChange={handleFormEdit}
+          placeholder="Quartos"
+          required
+        />
+      </div>
+      <div className={styles.formGroup}>
+        <input
+          className={styles.input}
+          name="bathrooms"
+          type="number"
+          value={formData.bathrooms}
+          onChange={handleFormEdit}
+          placeholder="Banheiros"
+          required
+        />
+      </div>
+      <div className={styles.formGroup}>
+        <input
+          className={styles.input}
+          name="garage"
+          type="number"
+          value={formData.garage}
+          onChange={handleFormEdit}
+          placeholder="Garagem"
+          required
+        />
+      </div>
+      <div className={styles.formGroup}>
+        <input
+          className={styles.input}
+          name="price"
+          value={formData.price}
+          onChange={handleFormEdit}
+          placeholder="Preço"
+          required
+        />
+      </div>
+      <div className={styles.formGroup}>
+        <input
+          className={styles.fileInput}
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          required
+        />
+      </div>
+      <button className={styles.submitButton} type="submit">
+        Cadastrar
+      </button>
+      {successMessage && (
+        <div className={styles.successMessage}>
+          Apartamento / Casa cadastrado
+        </div>
+      )}
     </form>
   );
 };
